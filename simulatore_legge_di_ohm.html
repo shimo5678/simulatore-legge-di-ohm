@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulatore della Legge di Ohm</title>
+<style>
+  :root { color-scheme: light; --blue:#2696e8; --gold:#d69a35; --green:#159b68; --ink:#243244; --muted:#64748b; --line:#e2e8f0; }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:28px 16px; background:#f3f6fa; color:var(--ink); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+  main { max-width:680px; margin:0 auto; }
+  .card { background:white; border:1px solid var(--line); border-radius:20px; padding:24px; box-shadow:0 8px 28px rgba(30,50,80,.07); }
+  h1 { margin:0; font-size:clamp(1.6rem,4vw,2.1rem); }
+  .subtitle { color:var(--muted); margin:6px 0 22px; font-size:.9rem; letter-spacing:.06em; }
+  .control { background:#f7f9fc; border-radius:14px; padding:18px; margin:14px 0; }
+  .control-head { display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:650; }
+  output { font-size:1.35rem; font-weight:750; font-variant-numeric:tabular-nums; }
+  #vOut { color:var(--blue); } #rOut { color:var(--gold); }
+  input[type=range] { width:100%; margin:18px 0 8px; accent-color:var(--blue); cursor:pointer; }
+  #resistance { accent-color:var(--gold); }
+  .range-labels { display:flex; justify-content:space-between; color:var(--muted); font-size:.78rem; }
+  .result { margin-top:20px; padding:22px; text-align:center; border:1px solid #cdebdc; background:#f2fbf6; border-radius:16px; }
+  .result-label { color:#39765a; font-size:.82rem; font-weight:700; letter-spacing:.06em; }
+  #iOut { color:var(--green); font-size:clamp(2.2rem,8vw,3.1rem); font-weight:800; margin:5px 0; font-variant-numeric:tabular-nums; }
+  .formula { font-size:1.35rem; font-weight:650; margin:5px 0 0; }
+  .explain { margin:18px 0 0; padding:14px 16px; border-left:4px solid var(--blue); background:#f5f9ff; border-radius:8px; line-height:1.5; }
+  .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+  button { border:1px solid var(--line); border-radius:10px; background:white; padding:10px 14px; color:var(--ink); font:inherit; cursor:pointer; }
+  button:hover { background:#f7f9fc; }
+  .note { color:var(--muted); font-size:.82rem; line-height:1.45; margin-top:18px; }
+  @media(max-width:480px) { .card {padding:18px;} .control {padding:15px;} }
+</style>
+</head>
+<body>
+<main>
+  <section class="card" aria-labelledby="title">
+    <h1 id="title">Legge di Ohm</h1>
+    <p class="subtitle">SIMULATORE INTERATTIVO</p>
+
+    <div class="control">
+      <div class="control-head">
+        <label for="voltage">Tensione (V)</label>
+        <output id="vOut" for="voltage">12 V</output>
+      </div>
+      <input id="voltage" type="range" min="0" max="100" step="1" value="12">
+      <div class="range-labels"><span>0 V</span><span>100 V</span></div>
+    </div>
+
+    <div class="control">
+      <div class="control-head">
+        <label for="resistance">Resistenza (R)</label>
+        <output id="rOut" for="resistance">6 Ω</output>
+      </div>
+      <input id="resistance" type="range" min="1" max="100" step="1" value="6">
+      <div class="range-labels"><span>1 Ω</span><span>100 Ω</span></div>
+    </div>
+
+    <div class="result" aria-live="polite">
+      <div class="result-label">INTENSITÀ DELLA CORRENTE</div>
+      <div id="iOut">2,00 A</div>
+      <div class="formula">I = V / R</div>
+    </div>
+
+    <p class="explain" id="explanation">Con questi valori, la corrente è di 2 A.</p>
+    <div class="actions">
+      <button id="reset" type="button">↺ Ripristina valori iniziali</button>
+    </div>
+    <p class="note">Prova a spostare i cursori: aumentando la tensione, l'intensità aumenta; aumentando la resistenza, l'intensità diminuisce (se l'altra grandezza resta uguale).</p>
+  </section>
+</main>
+<script>
+(() => {
+  const voltage = document.getElementById('voltage');
+  const resistance = document.getElementById('resistance');
+  const vOut = document.getElementById('vOut');
+  const rOut = document.getElementById('rOut');
+  const iOut = document.getElementById('iOut');
+  const explanation = document.getElementById('explanation');
+  const fmt = n => Number(n).toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+  function update() {
+    const v = Number(voltage.value);
+    const r = Number(resistance.value);
+    const i = v / r;
+    vOut.textContent = `${v} V`;
+    rOut.textContent = `${r} Ω`;
+    iOut.textContent = `${fmt(i)} A`;
+    explanation.textContent = `Con una tensione di ${v} V e una resistenza di ${r} Ω, l'intensità della corrente è ${fmt(i)} A.`;
+  }
+  voltage.addEventListener('input', update);
+  resistance.addEventListener('input', update);
+  document.getElementById('reset').addEventListener('click', () => {
+    voltage.value = 12;
+    resistance.value = 6;
+    update();
+  });
+  update();
+})();
+</script>
+</body>
+</html>
